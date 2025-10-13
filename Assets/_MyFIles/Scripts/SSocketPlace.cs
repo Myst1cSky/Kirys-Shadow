@@ -7,6 +7,7 @@ public class SSocketPlace : MonoBehaviour
     [SerializeField] private GameObject mPlugObject;
     [SerializeField] private Transform mPlugTargetPosition;
     [SerializeField] private GameObject mInteractionPrompt;
+    [SerializeField] private Material mSocketMaterial;
 
     private bool isPlayerNearby = false;
     private bool isPlugPlaced = false;
@@ -61,15 +62,24 @@ public class SSocketPlace : MonoBehaviour
 
     void PlacePlug()
     {
-        mPlugObject.transform.position = mPlugTargetPosition.position;
-        mPlugObject.transform.rotation = mPlugTargetPosition.rotation;
-        mPlugObject.transform.SetParent(transform); // Parent to socket
-        isPlugPlaced = true;
-
-        if (mInteractionPrompt != null)
+        SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
+        if (plugScript != null && plugScript.GetPlugMaterial() == mSocketMaterial)
         {
-            mInteractionPrompt.SetActive(false);
+            mPlugObject.transform.position = mPlugTargetPosition.position;
+            mPlugObject.transform.rotation = mPlugTargetPosition.rotation;
+            mPlugObject.transform.SetParent(transform);
+            isPlugPlaced = true;
+
+            if (mInteractionPrompt != null)
+            {
+                mInteractionPrompt.SetActive(false);
+            }
         }
+        else
+        {
+            Debug.Log("Plug material does not match socket material.");
+        }
+
     }
 
     void OnTriggerEnter(Collider other)

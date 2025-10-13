@@ -7,6 +7,7 @@ public class SPlugNSocket : MonoBehaviour
     [SerializeField] private GameObject mPlayerPrefab;
     [SerializeField] private Transform mBackPosition;
     [SerializeField] private GameObject mPlugUI;
+    [SerializeField] private Material mPlugMaterial;
     private bool isPlayerNearby = false;
     private bool isPickedUp = false;
 
@@ -79,7 +80,6 @@ public class SPlugNSocket : MonoBehaviour
             mPlugUI.SetActive(false);
         }
     }
-
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject == mPlayerPrefab)
@@ -102,5 +102,10 @@ public class SPlugNSocket : MonoBehaviour
                 mPlugUI.SetActive(false);
             }
         }
+    }
+
+    public Material GetPlugMaterial()
+    {
+        return mPlugMaterial;
     }
 }
