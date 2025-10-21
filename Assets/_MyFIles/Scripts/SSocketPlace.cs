@@ -3,11 +3,12 @@ using UnityEngine.InputSystem;
 
 public class SSocketPlace : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private GameObject mPlayerPrefab;
     [SerializeField] private GameObject mPlugObject;
     [SerializeField] private Transform mPlugTargetPosition;
     [SerializeField] private GameObject mInteractionPrompt;
-    [SerializeField] private Material mSocketMaterial;
+    [SerializeField] private Material socketMaterial;
 
     private bool isPlayerNearby = false;
     private bool isPlugPlaced = false;
@@ -17,12 +18,6 @@ public class SSocketPlace : MonoBehaviour
 
     void Start()
     {
-        if (mPlayerPrefab == null || mPlugObject == null || mPlugTargetPosition == null)
-        {
-            Debug.LogError("Missing references in SocketInteraction.");
-            return;
-        }
-
         MovementController movement = mPlayerPrefab.GetComponent<MovementController>();
         if (movement != null)
         {
@@ -32,54 +27,53 @@ public class SSocketPlace : MonoBehaviour
                 mInteractAction = mPlayerInputActions.Gameplay.Interact;
                 mInteractAction.performed += OnInteract;
             }
-            else
-            {
-                Debug.LogError("PlayerInputActions not initialized in MovementController.");
-            }
         }
 
-        if (mInteractionPrompt != null)
-        {
-            mInteractionPrompt.SetActive(false);
-        }
+        if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
     }
 
     void OnDestroy()
     {
         if (mInteractAction != null)
-        {
             mInteractAction.performed -= OnInteract;
-        }
     }
 
     private void OnInteract(InputAction.CallbackContext context)
     {
         if (isPlayerNearby && !isPlugPlaced)
-        {
-            PlacePlug();
-        }
+            TryPlacePlug();
     }
 
-    void PlacePlug()
+    void TryPlacePlug()
     {
         SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
-        if (plugScript != null && plugScript.GetPlugMaterial() == mSocketMaterial)
-        {
-            mPlugObject.transform.position = mPlugTargetPosition.position;
-            mPlugObject.transform.rotation = mPlugTargetPosition.rotation;
-            mPlugObject.transform.SetParent(transform);
-            isPlugPlaced = true;
+        bool isPlugOnPlayerBack = plugScript != null && plugScript.IsPickedUp() && mPlugObject.transform.parent == mPlayerPrefab.transform;
 
-            if (mInteractionPrompt != null)
-            {
-                mInteractionPrompt.SetActive(false);
-            }
+        if (isPlugOnPlayerBack && plugScript.GetPlugMaterial() == socketMaterial)
+        {
+            PlacePlug(plugScript);
         }
         else
         {
-            Debug.Log("Plug material does not match socket material.");
+            Debug.Log("Cannot place plug: Either it's not on player's back or material doesn't match.");
         }
+    }
 
+    void PlacePlug(SPlugNSocket plugScript)
+    {
+        mPlugObject.transform.SetParent(transform);
+        mPlugObject.transform.position = mPlugTargetPosition.position;
+        mPlugObject.transform.rotation = mPlugTargetPosition.rotation;
+
+        Rigidbody rb = mPlugObject.GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = true;
+
+        isPlugPlaced = true;
+        plugScript.SetInteractionEnabled(false); // Disable interaction and trigger collider permanently
+
+        if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
+
+        Debug.Log("Plug successfully placed in socket.");
     }
 
     void OnTriggerEnter(Collider other)
@@ -87,22 +81,24 @@ public class SSocketPlace : MonoBehaviour
         if (other.gameObject == mPlayerPrefab && !isPlugPlaced)
         {
             isPlayerNearby = true;
-            if (mInteractionPrompt != null)
-            {
-                mInteractionPrompt.SetActive(true);
-            }
+
+            SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
+            if (plugScript != null) plugScript.SetInteractionEnabled(false); // Disable interaction while near socket
+
+            if (mInteractionPrompt != null) mInteractionPrompt.SetActive(true);
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject == mPlayerPrefab)
+        if (other.gameObject == mPlayerPrefab && !isPlugPlaced)
         {
             isPlayerNearby = false;
-            if (mInteractionPrompt != null)
-            {
-                mInteractionPrompt.SetActive(false);
-            }
+
+            SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
+            if (plugScript != null) plugScript.SetInteractionEnabled(true); // Re-enable interaction when leaving
+
+            if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
         }
     }
 
