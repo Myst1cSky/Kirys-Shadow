@@ -23,7 +23,10 @@ Help Astra navigate through this course and escape the grasp of Kiry.
 ---
 
 # Features
-
+- ## PlugNSocketPuzzle
+  - A plug like object goes with a socket like object. (In the name)
+  - Both the plug and socket are color coded, so each color goes to its respected color.
+  - The plug has PHYSICS!!
 ---
 
 # Core Classes
@@ -35,7 +38,7 @@ Help Astra navigate through this course and escape the grasp of Kiry.
 ---
 
 # Screen Captures
-<img src="./GameShots/PlugNSocketShot.png" width=1000>
+<img src="./GameShots/PlugNSocketShot.png" width=500>
 
 
 ---
