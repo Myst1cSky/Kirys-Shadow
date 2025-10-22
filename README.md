@@ -35,7 +35,7 @@ Help Astra navigate through this course and escape the grasp of Kiry.
 ---
 
 # Screen Captures
-<img src="./Kirys-Shadow/GameShots/PlugNSocketShot.png" width=1000>
+<img src="./GameShots/PlugNSocketShot.png" width=1000>
 
 
 ---
