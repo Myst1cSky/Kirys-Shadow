@@ -70,6 +70,7 @@ public class SSocketPlace : MonoBehaviour
 
         isPlugPlaced = true;
         plugScript.SetInteractionEnabled(false); // Disable interaction and trigger collider permanently
+        SPlugNSocket.anyPlugPickedUp = false;
 
         if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
 

@@ -7,7 +7,8 @@ public class SPlugNSocket : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject mPlayerPrefab;
     [SerializeField] private Transform mBackPosition;
-    [SerializeField] private GameObject mPlugUI;
+    [SerializeField] private GameObject mPickUpPlugUI;
+    [SerializeField] private GameObject mDropPlugUI;
     [SerializeField] private Material plugMaterial;
     [SerializeField] private Collider interactionTrigger; // Assign Box Collider (Trigger) in Inspector
 
@@ -20,9 +21,10 @@ public class SPlugNSocket : MonoBehaviour
     [SerializeField] private Transform respawnPoint;
 
     public bool canInteract = true;
-
     private bool isPlayerNearby = false;
     private bool isPickedUp = false;
+
+    public static bool anyPlugPickedUp = false;
 
     private InputAction mInteractAction;
     private PlayerInputActions mPlayerInputActions;
@@ -40,7 +42,7 @@ public class SPlugNSocket : MonoBehaviour
             }
         }
 
-        if (mPlugUI != null) mPlugUI.SetActive(false);
+        if (mPickUpPlugUI != null) mPickUpPlugUI.SetActive(false);
     }
 
     void OnDestroy()
@@ -65,11 +67,13 @@ public class SPlugNSocket : MonoBehaviour
         transform.rotation = mBackPosition.rotation;
         transform.SetParent(mPlayerPrefab.transform);
         isPickedUp = true;
+        anyPlugPickedUp = true;
 
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
-        if (mPlugUI != null) mPlugUI.SetActive(false);
+        if (mPickUpPlugUI != null) mPickUpPlugUI.SetActive(false);
+        if (mDropPlugUI != null) mDropPlugUI.SetActive(true);
     }
 
     void DropObject()
@@ -93,6 +97,7 @@ public class SPlugNSocket : MonoBehaviour
         }
 
         isPickedUp = false;
+        anyPlugPickedUp = false;
 
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
@@ -100,6 +105,8 @@ public class SPlugNSocket : MonoBehaviour
             rb.isKinematic = false;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
+
+        if (mDropPlugUI != null) mDropPlugUI.SetActive(false);
     }
 
     void Update()
@@ -112,7 +119,7 @@ public class SPlugNSocket : MonoBehaviour
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
         }
@@ -123,7 +130,7 @@ public class SPlugNSocket : MonoBehaviour
         if (other.gameObject == mPlayerPrefab)
         {
             isPlayerNearby = true;
-            if (mPlugUI != null && !isPickedUp) mPlugUI.SetActive(true);
+            if (mPickUpPlugUI != null && !isPickedUp && !anyPlugPickedUp) mPickUpPlugUI.SetActive(true);
         }
     }
 
@@ -132,7 +139,7 @@ public class SPlugNSocket : MonoBehaviour
         if (other.gameObject == mPlayerPrefab)
         {
             isPlayerNearby = false;
-            if (mPlugUI != null) mPlugUI.SetActive(false);
+            if (mPickUpPlugUI != null) mPickUpPlugUI.SetActive(false);
         }
     }
 
