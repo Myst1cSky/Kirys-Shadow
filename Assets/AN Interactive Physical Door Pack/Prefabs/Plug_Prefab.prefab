@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2647207824495905049}
   - component: {fileID: 6916418543286238486}
   - component: {fileID: 570248858050583905}
+  - component: {fileID: 6101350229926965063}
   m_Layer: 0
   m_Name: Plug_Prefab
   m_TagString: Untagged
@@ -161,6 +162,31 @@ CapsuleCollider:
   m_Height: 0.37
   m_Direction: 1
   m_Center: {x: 0, y: 0.0968449, z: -0.000000022351742}
+--- !u!114 &6101350229926965063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2647207824495905055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32b57ea486051144baca4d972bb3764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mPlayerPrefab: {fileID: 0}
+  mBackPosition: {fileID: 0}
+  mPickUpPlugUI: {fileID: 0}
+  mDropPlugUI: {fileID: 0}
+  plugMaterial: {fileID: 0}
+  interactionTrigger: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  safeDropDistance: 1.5
+  minYPosition: -3
+  respawnPoint: {fileID: 0}
+  canInteract: 1
 --- !u!1 &2745907580146761467
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,11 +7,13 @@ public class SSocketPlace : MonoBehaviour
     [SerializeField] private GameObject mPlayerPrefab;
     [SerializeField] private GameObject mPlugObject;
     [SerializeField] private Transform mPlugTargetPosition;
-    [SerializeField] private GameObject mInteractionPrompt;
-    [SerializeField] private Material socketMaterial;
+    [SerializeField] private GameObject mSocketUI;
+    [SerializeField] private Material mSocketMaterial;
+    [SerializeField] private SSocketManager mSocketManager;
 
     private bool isPlayerNearby = false;
     private bool isPlugPlaced = false;
+    public bool IsPlugPlaced() => isPlugPlaced;
 
     private InputAction mInteractAction;
     private PlayerInputActions mPlayerInputActions;
@@ -29,7 +31,7 @@ public class SSocketPlace : MonoBehaviour
             }
         }
 
-        if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
+        if (mSocketUI != null) mSocketUI.SetActive(false);
     }
 
     void OnDestroy()
@@ -46,10 +48,10 @@ public class SSocketPlace : MonoBehaviour
 
     void TryPlacePlug()
     {
-        SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
+        SPlugPickUp plugScript = mPlugObject.GetComponent<SPlugPickUp>();
         bool isPlugOnPlayerBack = plugScript != null && plugScript.IsPickedUp() && mPlugObject.transform.parent == mPlayerPrefab.transform;
 
-        if (isPlugOnPlayerBack && plugScript.GetPlugMaterial() == socketMaterial)
+        if (isPlugOnPlayerBack && plugScript.GetPlugMaterial() == mSocketMaterial)
         {
             PlacePlug(plugScript);
         }
@@ -59,7 +61,7 @@ public class SSocketPlace : MonoBehaviour
         }
     }
 
-    void PlacePlug(SPlugNSocket plugScript)
+    void PlacePlug(SPlugPickUp plugScript)
     {
         mPlugObject.transform.SetParent(transform);
         mPlugObject.transform.position = mPlugTargetPosition.position;
@@ -69,12 +71,15 @@ public class SSocketPlace : MonoBehaviour
         if (rb != null) rb.isKinematic = true;
 
         isPlugPlaced = true;
-        plugScript.SetInteractionEnabled(false); // Disable interaction and trigger collider permanently
-        SPlugNSocket.anyPlugPickedUp = false;
+        plugScript.SetInteractionEnabled(false);
+        SPlugPickUp.anyPlugPickedUp = false;
 
-        if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
+        if (mSocketUI != null) mSocketUI.SetActive(false);
+        if (plugScript.mDropPlugUI != null) plugScript.mDropPlugUI.SetActive(false);
 
         Debug.Log("Plug successfully placed in socket.");
+
+        mSocketManager.CheckSockets();
     }
 
     void OnTriggerEnter(Collider other)
@@ -83,10 +88,14 @@ public class SSocketPlace : MonoBehaviour
         {
             isPlayerNearby = true;
 
-            SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
-            if (plugScript != null) plugScript.SetInteractionEnabled(false); // Disable interaction while near socket
+            SPlugPickUp plugScript = mPlugObject.GetComponent<SPlugPickUp>();
+            if (plugScript != null)
+            {
+                plugScript.SetInteractionEnabled(false);
+                if (plugScript.mDropPlugUI != null) plugScript.mDropPlugUI.SetActive(false);
+            }
 
-            if (mInteractionPrompt != null) mInteractionPrompt.SetActive(true);
+            if (mSocketUI != null) mSocketUI.SetActive(true);
         }
     }
 
@@ -96,10 +105,15 @@ public class SSocketPlace : MonoBehaviour
         {
             isPlayerNearby = false;
 
-            SPlugNSocket plugScript = mPlugObject.GetComponent<SPlugNSocket>();
-            if (plugScript != null) plugScript.SetInteractionEnabled(true); // Re-enable interaction when leaving
+            SPlugPickUp plugScript = mPlugObject.GetComponent<SPlugPickUp>();
+            if (plugScript != null)
+            {
+                plugScript.SetInteractionEnabled(true);
+                if (plugScript.IsPickedUp() && plugScript.mDropPlugUI != null)
+                    plugScript.mDropPlugUI.SetActive(true);
+            }
 
-            if (mInteractionPrompt != null) mInteractionPrompt.SetActive(false);
+            if (mSocketUI != null) mSocketUI.SetActive(false);
         }
     }
 

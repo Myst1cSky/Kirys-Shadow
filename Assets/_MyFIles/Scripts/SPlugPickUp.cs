@@ -2,22 +2,22 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class SPlugNSocket : MonoBehaviour
+public class SPlugPickUp : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject mPlayerPrefab;
     [SerializeField] private Transform mBackPosition;
-    [SerializeField] private GameObject mPickUpPlugUI;
-    [SerializeField] private GameObject mDropPlugUI;
+    [SerializeField] public GameObject mPickUpPlugUI;
+    [SerializeField] public GameObject mDropPlugUI;
     [SerializeField] private Material plugMaterial;
-    [SerializeField] private Collider interactionTrigger; // Assign Box Collider (Trigger) in Inspector
+    [SerializeField] private Collider interactionTrigger;
 
     [Header("Drop Settings")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float safeDropDistance = 1.5f;
 
     [Header("Respawn Settings")]
-    [SerializeField] private float minYPosition = -10f;
+    [SerializeField] private float minYPosition = -3f;
     [SerializeField] private Transform respawnPoint;
 
     public bool canInteract = true;
@@ -43,6 +43,7 @@ public class SPlugNSocket : MonoBehaviour
         }
 
         if (mPickUpPlugUI != null) mPickUpPlugUI.SetActive(false);
+        if (mDropPlugUI != null) mDropPlugUI.SetActive(false);
     }
 
     void OnDestroy()
@@ -57,7 +58,7 @@ public class SPlugNSocket : MonoBehaviour
 
         if (isPickedUp)
             DropObject();
-        else if (isPlayerNearby)
+        else if (isPlayerNearby && !anyPlugPickedUp)
             PickUpObject();
     }
 
@@ -127,10 +128,10 @@ public class SPlugNSocket : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == mPlayerPrefab)
+        if (other.gameObject == mPlayerPrefab && !isPickedUp && !anyPlugPickedUp)
         {
             isPlayerNearby = true;
-            if (mPickUpPlugUI != null && !isPickedUp && !anyPlugPickedUp) mPickUpPlugUI.SetActive(true);
+            if (mPickUpPlugUI != null) mPickUpPlugUI.SetActive(true);
         }
     }
 
@@ -150,7 +151,7 @@ public class SPlugNSocket : MonoBehaviour
     {
         canInteract = enabled;
         if (interactionTrigger != null)
-            interactionTrigger.enabled = enabled; // Enable/disable trigger collider
+            interactionTrigger.enabled = enabled;
     }
 
 }
