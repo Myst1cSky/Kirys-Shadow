@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class SPlugPickUp : MonoBehaviour
-{
+{ 
     [Header("References")]
     [SerializeField] private GameObject mPlayerPrefab;
     [SerializeField] private Transform mBackPosition;
