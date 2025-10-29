@@ -26,7 +26,7 @@ Help Astra navigate through this course and escape the grasp of Kiry.
 - ## FNAF Style Cameras
     - Click on the buttons(UI) to switch camera positions/views.
     - Different angles of the puzzles.
-- ## PlugNSocketPuzzle
+- ## PlugNSocket Puzzle
   - A plug like object goes with a socket like object. (In the name)
   - Both the plug and socket are color coded, so each color goes to its respected color.
   - The plug has PHYSICS!!
